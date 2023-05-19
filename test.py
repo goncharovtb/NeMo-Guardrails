@@ -7,13 +7,40 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.prompts import PromptTemplate
 from langchain.llms import OpenAI
 from langchain.chains import LLMChain
+import requests
+
+
+
 
 async def main():
-    os.environ["OPENAI_API_KEY"] = "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"
+
+    IAM_TOKEN = "enter key"
+    folder_id = 'enter folder id'
+    target_language = 'en'
+    texts = ["Как", "Открыть"]
+
+    body = {
+        "targetLanguageCode": target_language,
+        "texts": texts,
+        "folderId": folder_id,
+    }
+
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": "API-KEY {0}".format(IAM_TOKEN)
+    }
+
+    response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/translate',
+                             json=body,
+                             headers=headers
+                             )
+
+    print(response.text)
+
+    os.environ["OPENAI_API_KEY"] = "enter open AI key"
     config = RailsConfig.from_path("config")
     app = LLMRails(config)
     llm = OpenAI(temperature=0, max_tokens=1000)
-    embeddings = OpenAIEmbeddings()
 
     async def check_question(context):
         # Входная строка с данными
